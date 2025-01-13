@@ -118,6 +118,7 @@ function isIsoscelesTriangle(a, b, c) {
 function convertToRomanNumerals(num) {
   const romanNumerals = [
     { value: 10, symbol: 'X' },
+    { value: 9, symbol: 'IX' },
     { value: 5, symbol: 'V' },
     { value: 4, symbol: 'IV' },
     { value: 1, symbol: 'I' },
@@ -166,26 +167,42 @@ function convertNumberToString(numberStr) {
   };
 
   let result = '';
-  let processedNumberStr = numberStr;
+  let isNegative = false;
+  let currentIndex = 0;
 
-  if (processedNumberStr[0] === '-') {
-    result += 'minus ';
-    processedNumberStr = processedNumberStr.slice(1);
+  if (numberStr[currentIndex] === '-') {
+    isNegative = true;
+    currentIndex += 1;
   }
 
-  for (let i = 0; i < processedNumberStr.length; i += 1) {
-    switch (processedNumberStr[i]) {
+  if (isNegative) {
+    result += 'minus ';
+  }
+
+  while (currentIndex < numberStr.length) {
+    const char = numberStr[currentIndex];
+
+    switch (char) {
       case '.':
       case ',':
         result += 'point ';
         break;
       default:
-        result += `${digits[processedNumberStr[i]]} `;
+        result += `${digits[char]} `;
         break;
     }
+
+    currentIndex += 1;
   }
 
-  return result.trim();
+  let finalResult = '';
+  currentIndex = 0;
+  while (currentIndex < result.length - 1) {
+    finalResult += result[currentIndex];
+    currentIndex += 1;
+  }
+
+  return finalResult;
 }
 
 /**
@@ -223,7 +240,7 @@ function isPalindrome(str) {
  * @param {string} letter - The letter to find.
  * @return {number} The index of the first occurrence of the letter, or -1 if not found.
  *
- * @example:
+ * @example
  *  'qwerty', 'q'     => 0
  *  'qwerty', 't'     => 4
  *  'qwerty', 'Q'     => -1
@@ -285,7 +302,8 @@ function getBalanceIndex(arr) {
 
   let leftSum = 0;
   for (let i = 0; i < arr.length; i += 1) {
-    if (leftSum === totalSum - leftSum - arr[i]) {
+    const rightSum = totalSum - leftSum - arr[i];
+    if (leftSum === rightSum) {
       return i;
     }
     leftSum += arr[i];
